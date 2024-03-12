@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim Web</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #media {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Boletim</h1>
+    <div class="container">
+        <div class="alunos">
+            <label>Informe o aluno:</label>
+            <select id="selecionarAluno"></select>
+        </div>  
+        <div id="notas"></div>
+        <div id="media">
+            <p>Média: <span id="valorMedia"></span></p>
+            <p>Situação: <span id="situacao"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const alunos = [
+            { 
+                nome: "João", 
+                notas: {
+                    "Matemática": [7,8,7,7],
+                    "Português": [8,7,5,9],
+                    "História": [6,9,8,7],
+                    "Geografia": [7,7,6,7],
+                    "Ciências": [9,10,8,8],
+                    "Inglês": [8,10,10,7],
+                    "Ed. Física": [7,9,10,6]
+                }
+            },
+            { 
+                nome: "Pedro", 
+                notas: {
+                    "Matemática": [8,8,6,7],
+                    "Português": [7,7,6,8],
+                    "História": [9,9,10,8],
+                    "Geografia": [7,7,8,8],
+                    "Ciências": [9,8,6,6],
+                    "Inglês": [6,7,10,7],
+                    "Ed. Física": [10,10,10,9]
+                }
+            }
+        ];
+
+        const selecionarAluno = document.getElementById('selecionarAluno');
+        const notasContainer = document.getElementById('notas');
+        const mediaValor = document.getElementById('valorMedia');
+        const situacao = document.getElementById('situacao');
+
+        //Função para carregar alunos no dropdown
+        function carregarAlunos() {
+            alunos.forEach(aluno => {
+                const option = document.createElement("option");
+                option.value = aluno.nome;
+                option.textContent = aluno.nome;
+                selecionarAluno.appendChild(option);
+            });
+        }
+
+        // Atualizar função exibirNotas para exibir notas por disciplina
+        function exibirNotas(nomeAluno) {
+            const aluno = alunos.find(aluno => aluno.nome === nomeAluno);
+            if (aluno) {
+                const notas = aluno.notas;
+                let notasHTML = "<table><tr><th>Disciplina</th><th>Nota 1</th><th>Nota 2</th><th>Nota 3</th><th>Nota 4</th><th>Média</th><th>Situação</th></tr>";
+
+                for (const [disciplina, notasDisciplina] of Object.entries(notas)) {
+                    notasHTML += `<tr><td>${disciplina}</td>`;
+                    for (let i = 0; i < notasDisciplina.length; i++) {
+                        notasHTML += `<td>${notasDisciplina[i]}</td>`;
+                    }
+                    const mediaDisciplina = calcularMedia(notasDisciplina);
+                    notasHTML += `<td>${mediaDisciplina.toFixed(2)}</td>`;
+                    notasHTML += `<td>${mediaDisciplina >= 7 ? "Aprovado" : "Reprovado"}</td></tr>`;
+                }
+
+                notasHTML += "</table>";
+
+                notasContainer.innerHTML = notasHTML;
+
+                const mediaGeral = calcularMedia(Object.values(notas).map(notasDisciplina => calcularMedia(notasDisciplina)));
+                mediaValor.textContent = mediaGeral.toFixed(2);
+
+                const situacaoFinal = mediaGeral >= 7 ? "Aprovado" : "Reprovado";
+                situacao.textContent = situacaoFinal;
+            } else {
+                notasContainer.innerHTML = "";
+                mediaValor.textContent = "";
+                situacao.textContent = "";
+            }
+        }
+
+        //Função para calcular a média
+        function calcularMedia(notas) {
+            const total = notas.reduce((acc, curr) => acc + curr, 0);
+            return total / notas.length;
+        }
+
+        //Evento para quando um aluno é selecionado
+        selecionarAluno.addEventListener("change", () => {
+            const nomeAlunoSelecionado = selecionarAluno.value;
+            exibirNotas(nomeAlunoSelecionado);
+        });
+
+        //Inicializar o dropdown com os alunos
+        carregarAlunos();
+
+    </script>
+</body>
+</html>

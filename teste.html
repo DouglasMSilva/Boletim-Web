@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="header">
+        <h1>Boletim</h1>
+    </div>
+
+    <div class="container">
+        <select id="selecionarAluno"></select>
+
+        <div class="radios">
+            <input type="radio" name="materias" value="Português">Português
+            <input type="radio" name="materias" value="Matemática">Matemática
+        </div>
+
+        <div id="msg"></div>
+
+        <button onclick="selecionarDisciplina()">Checar</button>
+    </div>
+
+    <script>
+        const alunos = [
+            { nome: "João" },
+            { nome: "Carlos" }
+        ];
+
+        const selecionarAluno = document.getElementById('selecionarAluno');
+        const msg = document.getElementById('msg');
+
+        function carregarAlunos() {
+            alunos.forEach(aluno => {
+                const option = document.createElement("option");
+                option.value = aluno.nome;
+                option.textContent = aluno.nome;
+                selecionarAluno.appendChild(option);
+            });
+        }
+
+        function selecionarDisciplina() {
+            const nomeAlunoSelecionado = selecionarAluno.value;
+            const aluno = alunos.find(aluno => aluno.nome === nomeAlunoSelecionado);
+
+            if (aluno) {
+                const materias = document.querySelector('input[name="materias"]:checked');
+
+                if (materias) {
+                    let texto = document.createElement('p');
+                    let n1, n2;
+
+                    if (materias.value === "Português") {
+                        if (aluno.nome === "João") {
+                            n1 = 7;
+                            n2 = 8;
+                        } else if (aluno.nome === "Carlos") {
+                            n1 = 8;
+                            n2 = 6;
+                        }
+                    } else if (materias.value === "Matemática") {
+                        if (aluno.nome === "João") {
+                            n1 = 9;
+                            n2 = 8;
+                        } else if (aluno.nome === "Carlos") {
+                            n1 = 7;
+                            n2 = 8;
+                        }
+                    }
+
+                    const media = Number((n1 + n2) / 2);
+                    const situacao = media >= 7 ? "Aprovado" : "Reprovado";
+
+                    texto.textContent = `Aluno: ${nomeAlunoSelecionado} - Disciplina: ${materias.value} - Nota 1: ${n1} - Nota 2: ${n2} - Média: ${media.toFixed(2)} - Situação: ${situacao}`;
+                    msg.innerHTML = "";
+                    msg.appendChild(texto);
+                } else {
+                    msg.innerHTML = "Selecione uma disciplina.";
+                }
+            } else {
+                msg.innerHTML = "Aluno não encontrado.";
+            }
+        }
+
+        carregarAlunos();
+    </script>
+</body>
+</html>
